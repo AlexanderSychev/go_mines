@@ -1,0 +1,23 @@
+.go-mines__cell {
+    background-color: #808080;
+    background: #808080;
+    transition: all .125s ease-out;
+    color: black;
+}
+
+.go-mines__cell:hover {
+    background-color: #909090;
+    background: #909090;
+}
+
+.go-mines__cell_opened,
+.go-mines__cell_opened:hover {
+    background-color: #f0fff0;
+    background: #f0fff0;
+}
+
+.go-mines__cell_with-mine,
+.go-mines__cell_with-mine:hover {
+    background-color: #ffff00;
+    background: #ffff00;
+}
