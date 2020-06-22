@@ -1,0 +1,8 @@
+#!/usr/bin/env bash
+
+echo "Building..."
+make
+
+
+echo "Running..."
+./dist/mines
