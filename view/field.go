@@ -6,16 +6,24 @@ import (
 	"github.com/gotk3/gotk3/gtk"
 )
 
+// ---------------------------------------------------------------------------------------------------------------------
+// "Field" type definition
+// ---------------------------------------------------------------------------------------------------------------------
+
 type Field struct {
 	publisher *pubsub.Publisher
 	grid      *gtk.Grid
 }
+
+// Public methods
 
 func (field *Field) Render(win *gtk.ApplicationWindow) {
 	if win != nil && field.grid != nil {
 		win.Add(field.grid)
 	}
 }
+
+// Constructor
 
 func NewField(width, height int, publisher *pubsub.Publisher) (*Field, error) {
 	grid, gridErr := gtk.GridNew()

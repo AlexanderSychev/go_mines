@@ -11,20 +11,23 @@ import (
 	"github.com/gotk3/gotk3/gtk"
 )
 
-// -----------------------------------------------------------------------------
+// ---------------------------------------------------------------------------------------------------------------------
 // Constants
-// -----------------------------------------------------------------------------
+// ---------------------------------------------------------------------------------------------------------------------
 
 const (
-	cellButtonSize = 24
-	cellImageSize  = 16
-	flagImagePath  = "assets/flag.svg"
-	mineImagePath  = "assets/mine.svg"
+	cellButtonSize          = 24
+	cellImageSize           = 16
+	flagImagePath           = "assets/flag.svg"
+	mineImagePath           = "assets/mine.svg"
+	cellButtonRootClass     = "go-mines__cell"
+	cellButtonWithMineClass = "go-mines__cell_with-mine"
+	cellButtonOpenedClass   = "go-mines__cell_opened"
 )
 
-// -----------------------------------------------------------------------------
+// ---------------------------------------------------------------------------------------------------------------------
 // "Cell" type definition
-// -----------------------------------------------------------------------------
+// ---------------------------------------------------------------------------------------------------------------------
 
 type Cell struct {
 	x, y      int
@@ -51,7 +54,7 @@ func (cell *Cell) onClick(event *gdk.EventButton) {
 
 func (cell *Cell) HandleEvent(event pubsub.Event) {
 	switch event.Type {
-	case pubsub.CELL_TOGGLE_MARK_EVENT:
+	case pubsub.CellToggleMarkEvent:
 		payload, payloadOk := event.Payload.(pubsub.CellToggleMarkEventPayload)
 		if payloadOk && payload.X == cell.x && payload.Y == cell.y {
 			if payload.IsMarked {
@@ -62,7 +65,7 @@ func (cell *Cell) HandleEvent(event pubsub.Event) {
 				cell.button.SetLabel("")
 			}
 		}
-	case pubsub.CELL_OPENED_EVENT:
+	case pubsub.CellOpenedEvent:
 		payload, payloadOk := event.Payload.(pubsub.CellOpenedEventPayload)
 		if payloadOk && payload.X == cell.x && payload.Y == cell.y {
 			cell.flagImage.Hide()
@@ -71,7 +74,7 @@ func (cell *Cell) HandleEvent(event pubsub.Event) {
 				cell.mineImage.Show()
 				styleContext, styleContextError := cell.button.GetStyleContext()
 				if styleContextError == nil {
-					styleContext.AddClass("go-mines__cell_with-mine")
+					styleContext.AddClass(cellButtonWithMineClass)
 				}
 			} else {
 				var label string = ""
@@ -81,7 +84,7 @@ func (cell *Cell) HandleEvent(event pubsub.Event) {
 				cell.button.SetLabel(label)
 				styleContext, styleContextError := cell.button.GetStyleContext()
 				if styleContextError == nil {
-					styleContext.AddClass("go-mines__cell_opened")
+					styleContext.AddClass(cellButtonOpenedClass)
 				}
 			}
 		}
@@ -122,14 +125,14 @@ func NewCell(x, y int, publisher *pubsub.Publisher) (*Cell, error) {
 	if err != nil {
 		return nil, err
 	}
-	styleContext.AddClass("go-mines__cell")
+	styleContext.AddClass(cellButtonRootClass)
 
 	logger := log.New(os.Stdout, "[view.Cell]", log.LstdFlags)
 
 	view := Cell{x, y, logger, publisher, button, flagImage, mineImage}
 	var subscriber pubsub.Subscriber = &view
-	publisher.Subscribe(pubsub.CELL_OPENED_EVENT, &subscriber)
-	publisher.Subscribe(pubsub.CELL_TOGGLE_MARK_EVENT, &subscriber)
+	publisher.Subscribe(pubsub.CellOpenedEvent, &subscriber)
+	publisher.Subscribe(pubsub.CellToggleMarkEvent, &subscriber)
 
 	button.SetLabel("")
 	_, connectErr := button.Connect("button-press-event", func(_ *gtk.Button, e *gdk.Event) {
@@ -141,9 +144,4 @@ func NewCell(x, y int, publisher *pubsub.Publisher) (*Cell, error) {
 	}
 
 	return &view, nil
-}
-
-// Finalizer
-
-func FinalizeCell(cell *Cell) {
 }

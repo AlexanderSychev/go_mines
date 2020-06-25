@@ -2,6 +2,9 @@
 
 all: clean assets compile
 
+deps:
+	go mod vendor
+
 clean:
 	rm -rf dist
 	mkdir -p dist/assets

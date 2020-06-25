@@ -1,26 +1,28 @@
 package pubsub
 
-// -----------------------------------------------------------------------------
+// ---------------------------------------------------------------------------------------------------------------------
 // Constants
-// -----------------------------------------------------------------------------
+// ---------------------------------------------------------------------------------------------------------------------
 
 const (
-	CELL_OPENED_EVENT             = 0
-	CELL_TOGGLE_MARK_EVENT        = 1
-	CELL_BUTTON_LEFT_CLICK_EVENT  = 2
-	CELL_BUTTON_RIGHT_CLICK_EVENT = 3
+	CellOpenedEvent           = 0
+	CellToggleMarkEvent       = 1
+	CellButtonLeftClickEvent  = 2
+	CellButtonRightClickEvent = 3
+	CreateNewFieldEvent       = 4
+	CustomGameEvent           = 5
 )
 
-// -----------------------------------------------------------------------------
+// ---------------------------------------------------------------------------------------------------------------------
 // "Event" type definition
-// -----------------------------------------------------------------------------
+// ---------------------------------------------------------------------------------------------------------------------
 
 type Event struct {
-	Type    byte
+	Type    uint16
 	Payload interface{}
 }
 
-func NewEvent(eventType byte, payload interface{}) Event {
+func NewEvent(eventType uint16, payload interface{}) Event {
 	return Event{eventType, payload}
 }
 
@@ -34,7 +36,7 @@ type CellOpenedEventPayload struct {
 }
 
 func NewCellOpenedEvent(payload CellOpenedEventPayload) Event {
-	return NewEvent(CELL_OPENED_EVENT, payload)
+	return NewEvent(CellOpenedEvent, payload)
 }
 
 type CellToggleMarkEventPayload struct {
@@ -43,20 +45,29 @@ type CellToggleMarkEventPayload struct {
 }
 
 func NewCellToggleMarkEvent(payload CellToggleMarkEventPayload) Event {
-	return NewEvent(CELL_TOGGLE_MARK_EVENT, payload)
+	return NewEvent(CellToggleMarkEvent, payload)
 }
 
 type CellButtonClickEventPayload struct {
 	X, Y int
 }
 
-func NewCellButtonClickEvent(
-	right bool,
-	payload CellButtonClickEventPayload,
-) Event {
-	var eventType byte = CELL_BUTTON_LEFT_CLICK_EVENT
+func NewCellButtonClickEvent(right bool, payload CellButtonClickEventPayload) Event {
+	var eventType uint16 = CellButtonLeftClickEvent
 	if right {
-		eventType = CELL_BUTTON_RIGHT_CLICK_EVENT
+		eventType = CellButtonRightClickEvent
 	}
 	return NewEvent(eventType, payload)
+}
+
+type CreateNewFieldEventPayload struct {
+	width, height, mines int
+}
+
+func NewCreateNewFieldEvent(width, height, mines int) Event {
+	return NewEvent(CreateNewFieldEvent, CreateNewFieldEventPayload{width, height, mines})
+}
+
+func NewCustomGameEvent() Event {
+	return NewEvent(CustomGameEvent, nil)
 }

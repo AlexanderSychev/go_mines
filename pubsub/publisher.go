@@ -1,23 +1,23 @@
 package pubsub
 
-// -----------------------------------------------------------------------------
+// ---------------------------------------------------------------------------------------------------------------------
 // "Publisher" type definition
-// -----------------------------------------------------------------------------
+// ---------------------------------------------------------------------------------------------------------------------
 
 type Publisher struct {
-	channels map[byte][]*Subscriber
+	channels map[uint16][]*Subscriber
 }
 
 // Methods
 
-func (pub *Publisher) Subscribe(eventType byte, sub *Subscriber) {
+func (pub *Publisher) Subscribe(eventType uint16, sub *Subscriber) {
 	if pub.channels[eventType] == nil {
 		pub.channels[eventType] = make([]*Subscriber, 0)
 	}
 	pub.channels[eventType] = append(pub.channels[eventType], sub)
 }
 
-func (pub *Publisher) Unsubscribe(eventType byte, sub *Subscriber) {
+func (pub *Publisher) Unsubscribe(eventType uint16, sub *Subscriber) {
 	if pub.channels[eventType] != nil {
 		newList := make([]*Subscriber, 0)
 		for _, s := range pub.channels[eventType] {
@@ -50,5 +50,5 @@ func (pub *Publisher) BulkPublish(events []Event) {
 // Constructor
 
 func NewPublisher() *Publisher {
-	return &Publisher{make(map[byte][]*Subscriber)}
+	return &Publisher{channels: make(map[uint16][]*Subscriber)}
 }

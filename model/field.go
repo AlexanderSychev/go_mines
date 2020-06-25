@@ -9,16 +9,6 @@ import (
 )
 
 //------------------------------------------------------------------------------
-// Constants
-//------------------------------------------------------------------------------
-
-const (
-	minWidth  = 8
-	minHeight = 8
-	minMines  = 10
-)
-
-//------------------------------------------------------------------------------
 // "Field" type definition
 //------------------------------------------------------------------------------
 
@@ -219,7 +209,7 @@ func (field *Field) HandleEvent(event pubsub.Event) {
 	payload, hasPayload := event.Payload.(pubsub.CellButtonClickEventPayload)
 	if hasPayload {
 		switch event.Type {
-		case pubsub.CELL_BUTTON_LEFT_CLICK_EVENT:
+		case pubsub.CellButtonLeftClickEvent:
 			opened, err := field.Open(payload.X, payload.Y)
 			if err != nil {
 				field.logger.Println(err)
@@ -230,7 +220,7 @@ func (field *Field) HandleEvent(event pubsub.Event) {
 					payload.Y,
 				)
 			}
-		case pubsub.CELL_BUTTON_RIGHT_CLICK_EVENT:
+		case pubsub.CellButtonRightClickEvent:
 			toggled, err := field.ToggleMark(payload.X, payload.Y)
 			if err != nil {
 				field.logger.Println(err)
@@ -286,8 +276,8 @@ func NewField(width, height, mines int, publisher *pubsub.Publisher) (*Field, er
 	logger := log.New(os.Stdout, "[model.Field]", log.LstdFlags)
 	field := Field{logger, publisher, cells}
 	var subscriber pubsub.Subscriber = &field
-	publisher.Subscribe(pubsub.CELL_BUTTON_LEFT_CLICK_EVENT, &subscriber)
-	publisher.Subscribe(pubsub.CELL_BUTTON_RIGHT_CLICK_EVENT, &subscriber)
+	publisher.Subscribe(pubsub.CellButtonLeftClickEvent, &subscriber)
+	publisher.Subscribe(pubsub.CellButtonRightClickEvent, &subscriber)
 
 	return &field, nil
 }
@@ -299,8 +289,8 @@ func FinalizeField(field *Field) bool {
 	if field != nil {
 		if field.publisher != nil {
 			var subscriber pubsub.Subscriber = field
-			field.publisher.Unsubscribe(pubsub.CELL_BUTTON_LEFT_CLICK_EVENT, &subscriber)
-			field.publisher.Unsubscribe(pubsub.CELL_BUTTON_RIGHT_CLICK_EVENT, &subscriber)
+			field.publisher.Unsubscribe(pubsub.CellButtonLeftClickEvent, &subscriber)
+			field.publisher.Unsubscribe(pubsub.CellButtonRightClickEvent, &subscriber)
 			field.publisher = nil
 		}
 		field.cells = nil
