@@ -2,6 +2,7 @@ package CustomGame
 
 import (
 	"fmt"
+	"github.com/AlexanderSychev/go_mines/Routing"
 	"github.com/AlexanderSychev/go_mines/flow"
 	"log"
 	"reflect"
@@ -131,9 +132,7 @@ func (c *Controller) OnSubmit() error {
 
 	params := [3]int{width, height, mines}
 
-	_, err = broker.RouteTo("game", params)
-
-	return err
+	return flow.GetRouterInstance().RouteTo(Routing.RouteGame, params)
 }
 
 func (c *Controller) String() string {
