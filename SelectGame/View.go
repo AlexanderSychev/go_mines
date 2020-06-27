@@ -1,7 +1,6 @@
 package SelectGame
 
 import (
-	"fmt"
 	"github.com/AlexanderSychev/go_mines/flow"
 	"github.com/gotk3/gotk3/glib"
 	"github.com/gotk3/gotk3/gtk"
@@ -41,7 +40,6 @@ func (v *View) addGame(index int, game string) error {
 
 	handle, err := button.Connect(signal, func(_ *gtk.Button) {
 		message := flow.NewMessageWithArgs(selectMethod, index)
-		fmt.Println(message)
 		_, sendErr := broker.SendToActor(flow.ControllerActor, message)
 		if sendErr != nil {
 			log.Println(sendErr)
